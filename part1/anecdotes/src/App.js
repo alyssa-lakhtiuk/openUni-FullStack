@@ -26,16 +26,32 @@ const App = () => {
     newPoints[selected] += 1
     setPoints(newPoints)
   }
+  const findMaxVotes = () => {
+    let anecdoteNumMax, maxPoint = 0;
+    for(let i = 1; i < max; i ++) {
+      if(points[i] > maxPoint) {
+        maxPoint = points[i];
+        anecdoteNumMax = i;
+      }
+    }
+    return anecdotes[anecdoteNumMax]
+  }
+
   console.log(points) 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <p>
         <button onClick={voteOnClick}>vote</button>
         <button onClick={randomAnecdote}>next anecdote</button>
       </p>
+      <h1>Anecdote with most votes</h1>
+      <Display value = {findMaxVotes()}/>
     </div>
   )
 }
+
+const Display = props => <div>{props.value}</div>
 
 export default App
