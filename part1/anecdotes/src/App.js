@@ -13,18 +13,25 @@ const App = () => {
   ]
   const min = 0
   const max = anecdotes.length
-  const [selected, setSelected] = useState(0)
 
+  const [selected, setSelected] = useState(Math.floor(Math.random() * (max - min) + min))
   const randomAnecdote = () =>{
     let randomInt = Math.floor(Math.random() * (max - min) + min)
     setSelected(randomInt);
   }
 
-  
+  const [points, setPoints] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 })
+  const voteOnClick = () =>{
+    const newPoints = { ...points }
+    newPoints[selected] += 1
+    setPoints(newPoints)
+  }
+  console.log(points) 
   return (
     <div>
       {anecdotes[selected]}
       <p>
+        <button onClick={voteOnClick}>vote</button>
         <button onClick={randomAnecdote}>next anecdote</button>
       </p>
     </div>
