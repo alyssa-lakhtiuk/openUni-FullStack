@@ -10,6 +10,9 @@ const App = () => {
   const pageHeader = "give feedback"
   const pageHeader2 = "statistics"
 
+  const all = good + neutral + bad
+
+
   return (
     <div>
       <h1>{pageHeader}</h1>
@@ -20,9 +23,32 @@ const App = () => {
       <p>good {good}</p>
       <p>neutral {neutral}</p>
       <p>bad {bad}</p>
+      <p>all {all}</p>
+      <Average good = {good} bad = {bad} all = {all}/>
+      <Positive good = {good} all = {all}/>
     </div>
   )
 }
+
+const Average = ({good, bad, all}) => {
+  const points = {
+    good : 1, 
+    neutral : 0,
+    bad : -1
+  }
+  const average = (good * points.good + bad * points.bad) / all
+  if (isNaN(average)) {
+    return <div> average 0 </div>
+  }
+  return <div>average {average} </div>
+}
+
+const Positive = ({good, all}) => {
+  const positive = good * 100 / all
+  return <div> positive {positive} % </div>
+}
+
+
 
 
 
