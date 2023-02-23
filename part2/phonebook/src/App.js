@@ -50,8 +50,24 @@ const App = () => {
     }
     if(persons.some(item => item.name === newName) === true){
       console.log("alert for name called")
-      alert(`${newName} is already added to phonebook`)
-      return
+      
+      let index = persons.findIndex(person => person.name === newName);
+      let id = persons[index].id;
+      nameObject.id = id
+      let checkIfChange = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`);
+      if (checkIfChange === true) {
+        personsService
+          .update(id, nameObject)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+          })
+          alert(
+            `Updated ${newName} ${newNumber}`
+          )
+          setTimeout(() => {
+          }, 5000)
+        }
+        return
     }
     if(persons.some(item => item.number === newNumber) === true){
       console.log("alert for number called")
