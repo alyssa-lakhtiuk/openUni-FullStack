@@ -7,13 +7,16 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
+  const [maxId, setMaxId] = useState(0)
 
   useEffect(() => {
     personsService
       .getAll()
-      .then(initialPersons => 
-        setPersons(initialPersons))
+      .then(initialPersons => {
+        setPersons(initialPersons)
+        setMaxId(initialPersons.length)})
   }, []);
+
   
   const handleNameChange = (event) => {
     console.log(event.target.value)
@@ -37,10 +40,13 @@ const App = () => {
 
   const addNewNameNNumber = (event) => {
     event.preventDefault()
+    const newMaxId = maxId + 1
+    console.log('max id ', newMaxId)
+    console.log('persons array ', persons)
     const nameObject = {
       name : newName,
       number : newNumber,
-      id: persons.length + 1
+      id: newMaxId
     }
     if(persons.some(item => item.name === newName) === true){
       console.log("alert for name called")
@@ -58,21 +64,47 @@ const App = () => {
     .create(nameObject)
     .then(returnedPerson => {
       setPersons(persons.concat(returnedPerson))
+      setMaxId(newMaxId)
       setNewName('')
       setNewNumber('')
     })
   }
 
+  const deletePerson = (id, name) => {
+    let confirmation = window.confirm(`Delete ${name}?`);
+    if (confirmation) {
+      personsService
+        .deleteP(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          alert(
+            `the information of '${name}' was already deleted from server`
+          )
+          setTimeout(() => {
+          }, 5000)
+          setPersons(persons.filter(p => p.id !== id))
+        })
+    }
+    console.log(persons)
+  }
   
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter filterValue={filterValue} handleFiltration={handleFiltration}/>
+      <Filter filterValue={filterValue} 
+              handleFiltration={handleFiltration}/>
       <h2>add a new</h2>
-      <PersonForm addNewNameNNumber={addNewNameNNumber} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+      <PersonForm addNewNameNNumber={addNewNameNNumber} 
+                  newName={newName} 
+                  handleNameChange={handleNameChange} 
+                  newNumber={newNumber} 
+                  handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons}/>
+      <Persons filteredPersons={filteredPersons} 
+               deletePerson={deletePerson}/>
     </div>
   )
 } 
@@ -97,9 +129,9 @@ const PersonForm = ({addNewNameNNumber, newName, handleNameChange, newNumber, ha
       </form>
 }
 
-const Persons = ({filteredPersons}) => {
-  return <div>{filteredPersons.map(person => <Person key={person.id} person={person}></Person>)}</div>
+const Persons = ({filteredPersons, deletePerson}) => {
+  return <div>{filteredPersons.map(person => <Person key={person.id} person={person} deletePerson={deletePerson}></Person>)}</div>
 }
-const Person = ({person}) => <div>{person.name} {person.number}</div>
+const Person = ({person, deletePerson}) => <div>{person.name} {person.number} <button onClick={() => deletePerson(person.id)}>delete</button></div>
 
 export default App
