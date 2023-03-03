@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import countriesService from './services/countries'
+import weatherService from './services/weather'
 
 const App = () => {
   const [countries, setCountries] = useState([])
@@ -106,6 +107,7 @@ const Country = ({country}) => {
       <div>
         <img src = {country.flags.png} alt={''}></img>
       </div>
+      <Weather country={country}></Weather>
       </div>
     )
   }
@@ -127,6 +129,31 @@ const Languages = ({languages}) => {
     )
 }
 
+const Weather = ({country}) => {
+  const [weather, setWeather] = useState(null)
+  useEffect(() => {
+    weatherService
+      .getWeather(country)
+      .then(responseWeather => {
+        setWeather(responseWeather)
+      })
+  }, [])
 
+  if (weather) {
+    console.log("weather:", weather)
+    const weatherImg = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+    return (
+      <div>
+          <h2>Weather in {country.capital} </h2>
+          <p>temperature {(weather.main.temp - 273).toFixed(2)} Celcius</p>
+          <p><img src = {weatherImg} alt = {''}></img></p>
+          <p>wind {weather.wind.speed} m/s</p>
+      </div>
+    )
+  }
+  return <div>
+
+  </div>
+}
 
 export default App;
