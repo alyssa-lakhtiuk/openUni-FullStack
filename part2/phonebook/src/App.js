@@ -8,7 +8,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [maxId, setMaxId] = useState(0)
-  const [errorMessage, setErrorMessage] = useState('error message will be displayed here...')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personsService
@@ -60,14 +61,21 @@ const App = () => {
           .update(id, nameObject)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+            setNotificationMessage(
+              `Updated ${newName} ${newNumber}`
+            )
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 5000)
           })
-          setErrorMessage(
-            `Updated ${newName} ${newNumber}`
-          )
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000)
-          
+          .catch(error => {
+            setErrorMessage(
+              `the information of '${newName}' was already deleted from server`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)})
+            setPersons(persons.filter(p => p.id !== id))
         }
         return
     }
@@ -87,11 +95,11 @@ const App = () => {
       setNewName('')
       setNewNumber('')
     })
-    setErrorMessage(
+    setNotificationMessage(
       `${newName} is added to phonebook`
     )
     setTimeout(() => {
-      setErrorMessage(null)
+      setNotificationMessage(null)
     }, 5000)
   }
 
@@ -120,7 +128,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
+      <Notification message={notificationMessage} />
+      <ErrorMessage message={errorMessage} />
       <Filter filterValue={filterValue} 
               handleFiltration={handleFiltration}/>
       <h2>add a new</h2>
@@ -164,6 +173,27 @@ const Person = ({person, deletePerson}) => <div>{person.name} {person.number} <b
 const Notification = ({ message }) => {
   const errorStyle = {
     color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div style={errorStyle}>
+      {message}
+    </div>
+  )
+}
+
+const ErrorMessage = ({ message }) => {
+  const errorStyle = {
+    color: 'red',
     background: 'lightgrey',
     fontSize: 20,
     borderStyle: 'solid',
