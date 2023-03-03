@@ -8,6 +8,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [maxId, setMaxId] = useState(0)
+  const [errorMessage, setErrorMessage] = useState('error message will be displayed here...')
 
   useEffect(() => {
     personsService
@@ -49,7 +50,6 @@ const App = () => {
       id: newMaxId
     }
     if(persons.some(item => item.name === newName) === true){
-      console.log("alert for name called")
       
       let index = persons.findIndex(person => person.name === newName);
       let id = persons[index].id;
@@ -61,16 +61,18 @@ const App = () => {
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
           })
-          alert(
+          setErrorMessage(
             `Updated ${newName} ${newNumber}`
           )
           setTimeout(() => {
+            setErrorMessage(null)
           }, 5000)
+          
         }
         return
     }
     if(persons.some(item => item.number === newNumber) === true){
-      console.log("alert for number called")
+      console.log("error for number called")
       alert(`${newNumber} is already added to phonebook`)
       return
     }
@@ -80,10 +82,17 @@ const App = () => {
     .create(nameObject)
     .then(returnedPerson => {
       setPersons(persons.concat(returnedPerson))
+      console.log(returnedPerson)
       setMaxId(newMaxId)
       setNewName('')
       setNewNumber('')
     })
+    setErrorMessage(
+      `${newName} is added to phonebook`
+    )
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
   }
 
   const deletePerson = (id, name) => {
@@ -95,10 +104,11 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
         })
         .catch(error => {
-          alert(
+          setErrorMessage(
             `the information of '${name}' was already deleted from server`
           )
           setTimeout(() => {
+            setErrorMessage(null)
           }, 5000)
           setPersons(persons.filter(p => p.id !== id))
         })
@@ -110,6 +120,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter filterValue={filterValue} 
               handleFiltration={handleFiltration}/>
       <h2>add a new</h2>
@@ -149,5 +160,26 @@ const Persons = ({filteredPersons, deletePerson}) => {
   return <div>{filteredPersons.map(person => <Person key={person.id} person={person} deletePerson={deletePerson}></Person>)}</div>
 }
 const Person = ({person, deletePerson}) => <div>{person.name} {person.number} <button onClick={() => deletePerson(person.id)}>delete</button></div>
+
+const Notification = ({ message }) => {
+  const errorStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div style={errorStyle}>
+      {message}
+    </div>
+  )
+}
 
 export default App
