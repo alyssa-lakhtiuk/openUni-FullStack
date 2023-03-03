@@ -41,23 +41,52 @@ const Countries = ({countries}) => {
   if (countries.length >= 10) {
     return <div> Too many matches, specify another filter</div>
   }
-  else if (countries.length == 1) {
+  else if (countries.length === 1) {
     return  <div>{countries
       .map(country => 
       <Country key={country} country={country}></Country>)}
   </div>
   } else {
-    return  <div>{countries
-      .map(country => <CountryName key={country.name.official} countryName={country.name.common}></CountryName>
-      )}
-    </div>
+    return <CountryInfoNButton countries={countries}></CountryInfoNButton>
   }
 }
 
+const CountryInfoNButton = ({countries}) => {
+  const [shown, setShown] = useState(null)
+  const showCountryInfo = (country) => {
+    if (country){
+      if (country.name.common !== shown) setShown(country.name.common)
+    } else {
+      setShown(null)
+    }
+  }
+  console.log("shown country name: ", shown)
+  if (shown) {
+    return (
+    <div>{countries.map(country => 
+      <div key={country.name.official}> 
+        {country.name.common === shown ? 
+            <div> <Country country={country}></Country> <button onClick={() => showCountryInfo(null)}>hide</button></div>: 
+            <div><CountryName countryName={country.name.common}></CountryName> <button onClick={() => showCountryInfo(country)}>show</button></div>}
+      </div>
+      )}
+    </div> )
+  } else {
+    return (<div>{countries
+      .map(country => 
+      <div key={country.name.official}> 
+        <CountryName countryName={country.name.common}></CountryName> <button onClick={() => showCountryInfo(country)}>show</button>
+      </div>
+      )}
+    </div>)
+  }
+}
+
+
 const CountryName = ({countryName}) => {
-  return <div>
+  return <>
     {countryName}
-  </div>
+  </>
 }
 
 
@@ -66,7 +95,7 @@ const Country = ({country}) => {
     console.log("country to print: ", country)
     return (
       <div>
-        <h1>{country.name.common}</h1>
+        <CountryName countryName={country.name.common}></CountryName>
         <p>capital: {country.capital}</p>
       <div>
         area: {country.area} km<sup>2</sup>
@@ -75,7 +104,7 @@ const Country = ({country}) => {
         <Languages languages={country.languages}></Languages>
       </ul>
       <div>
-        <img src = {country.flags.png}></img>
+        <img src = {country.flags.png} alt={''}></img>
       </div>
       </div>
     )
@@ -97,6 +126,7 @@ const Languages = ({languages}) => {
       </div>     
     )
 }
+
 
 
 export default App;
