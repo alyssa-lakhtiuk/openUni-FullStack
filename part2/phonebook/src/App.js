@@ -1,6 +1,10 @@
 import React from 'react';
 import { useState, useEffect } from "react";
 import personsService from './services/persons'
+import Persons from './components/Persons'
+import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
+import ErrorMessage from './components/ErrorMessage'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -151,65 +155,6 @@ const Filter = ({filterValue, handleFiltration}) => {
       </div>
 }
 
-const PersonForm = ({addNewNameNNumber, newName, handleNameChange, newNumber, handleNumberChange}) => {
-  return <form onSubmit={addNewNameNNumber}>
-        <div>
-          name : <input value = {newName} onChange = {handleNameChange}/>
-        </div>
-        <div>
-          number : <input value = {newNumber} onChange = {handleNumberChange}/>
-        </div>
-        <div>
-          <button type = "submit">add</button>
-        </div>
-      </form>
-}
 
-const Persons = ({filteredPersons, deletePerson}) => {
-  return <div>{filteredPersons.map(person => <Person key={person.id} person={person} deletePerson={deletePerson}></Person>)}</div>
-}
-const Person = ({person, deletePerson}) => <div>{person.name} {person.number} <button onClick={() => deletePerson(person.id)}>delete</button></div>
-
-const Notification = ({ message }) => {
-  const errorStyle = {
-    color: 'green',
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10
-  }
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div style={errorStyle}>
-      {message}
-    </div>
-  )
-}
-
-const ErrorMessage = ({ message }) => {
-  const errorStyle = {
-    color: 'red',
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10
-  }
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div style={errorStyle}>
-      {message}
-    </div>
-  )
-}
 
 export default App
